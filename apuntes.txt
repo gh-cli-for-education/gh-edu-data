@@ -1,0 +1,6 @@
+gh edu data login
+gh edu pilla el login y el alumno solo tiene que poner su alu
+gh edu data --login nombre1_nombre2-apellido1-apellido2.aluxxxx.login // Cuidado con apellidos unicos
+El tema se crea en Github
+gh edu view members // TODO Si eres profesor mostrar todos los teams si eres alumno mostrar tu team
+// TODO añadir más resultados: prácticas entregados, etc...

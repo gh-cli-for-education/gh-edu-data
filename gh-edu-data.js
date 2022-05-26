@@ -1,11 +1,27 @@
 import { program } from "commander"
 import data from './data/data.js'
+import team from './team/team.js'
+import addTeam from './add-team/add-team.js'
 
 program
+  .command("log")
   .description("Save some data about your users")
   .argument("<inputFile>")
   .option("-o, --output <outputFile>", "File to write the resulting data")
-  .action((file, options) => { // TODO add quit option
+  .action((file, options) => { // TODO add quiet option
     data(file, options);
   })
+
+program
+  .command("team")
+  .option("-o, --output <outputFile>", "File to write the resulting data")
+  .action((options) => {
+    team(options);
+  })
+program
+  .command("team-add")
+  .action(() => {
+    addTeam();
+  })
 program.parse();
+

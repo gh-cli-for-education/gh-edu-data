@@ -1,20 +1,16 @@
 [
   {
-    "name": "Cristo García",
+    "name": "Cristo García González",
     "id": "alu0101204512",
-    "login": "GGCristo",
-    "bio": "Computer Science (Ingeniería informática) student at Universidad de La Laguna (ULL).\r\nKISS my terminal \\\\\r\nclear && (useful || interesting)",
-    "email": "alu0101204512@ull.edu.es",
+    "login": "ggcristo",
     "url": "https://github.com/GGCristo",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/58046649?u=13818c37965d1f701bf1bfb3c65b2b579f5b3c40&v=4"
+    "email": "alu0101204512@ull.edu.es"
   },
   {
-    "name": "Eduardo Expósito",
-    "id": "alu0101204577",
-    "login": "EduardoEB3",
-    "bio": "",
-    "email": "",
-    "url": "https://github.com/EduardoEB3",
-    "avatarUrl": "https://avatars.githubusercontent.com/u/72284880?u=b0cce07640529f5782f3a0f02645b8f1dd17595c&v=4"
+    "name": "Manolo de los santos Pérez Galdós",
+    "id": "alu0102340234",
+    "login": "galdozz",
+    "url": "https://github.com/GGCristo",
+    "email": "alu0101204512@ull.edu.es"
   }
 ]

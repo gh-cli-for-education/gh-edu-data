@@ -83,7 +83,6 @@ async function fill(localData, metaData) {
   return localData;
 }
 
-// export const chooseOrgName = "gh api --paginate /user/memberships/orgs  --jq '.[].organization.login' | fzf  --prompt='Choose an organization> ' --layout=reverse --border";
 export default async function data(file, options) {
   if (!config.defaultOrg) {
     console.error("Please set an organization as default")
@@ -96,9 +95,7 @@ export default async function data(file, options) {
   }
   const fileString = fs.readFileSync(file, { encoding: "utf8" })
   const data = JSON.parse(fileString);
-  // console.log("data: ", data);
   const metaData = await setMetadata(data);
-  // console.log("metaData: ", metaData);
   if (check(data, metaData))
     return;
   const result = await fill(data, metaData);
