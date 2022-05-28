@@ -46,8 +46,8 @@ function parse(teams) {
   for (const team of teams) {
     //console.log(team.name);
     if (team.totalCount > 1) {
-      console.log(chalk.yellow("Warning:", team.totalCount, "members in this team. Skip"));
-      console.log(team.url);
+      console.warn(chalk.yellow("Warning:", team.totalCount, "members in this team. Skip"));
+      //console.log(team.url);
       continue;
     }
     let dataArr = team.name?.match(config?.teams?.regexp)
@@ -75,7 +75,7 @@ function parse(teams) {
     if (team?.member?.email) student.email= team.member.email
 
     config?.teams?.fields?.forEach(([field, index]) =>  {
-      console.log(field, index);
+      //console.log(field, index);
       student[field] = dataArr[index] || "";
     });
     newTeams.push(student);
