@@ -8,7 +8,7 @@ const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", {
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(process.cwd() + "/../gh-edu/utils/utils.js");
+const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
 
 /** @param questions {any[]}*/
 async function setMetadata(data) {

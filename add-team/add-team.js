@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-const utility = import(process.cwd() + "/../gh-edu/utils/utils.js");
+const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
 import shell from "shelljs";
 /** Load configuration */
 import fs from 'fs'
