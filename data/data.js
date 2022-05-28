@@ -1,14 +1,19 @@
+import path from 'path';
+import {fileURLToPath} from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import tmp from "tmp";
 
 /** Load configuration */
 import fs from 'fs'
-const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", { encoding: "utf8" })
+const stringConfig = fs.readFileSync(__dirname + "/../../gh-edu/config.json", { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(process.cwd() + "/../gh-edu/utils/utils.js");
+const utility = import(__dirname + "/../../gh-edu/utils/utils.js");
 
 /** @param questions {any[]}*/
 async function setMetadata(data) {

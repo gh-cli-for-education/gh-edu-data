@@ -1,12 +1,18 @@
+import path from 'path';
+import {fileURLToPath} from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import inquirer from 'inquirer'
 import chalk from "chalk";
 
 /** Load configuration */
 import fs from 'fs'
-const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", { encoding: "utf8" })
+const stringConfig = fs.readFileSync(__dirname + "/../../gh-edu/config.json", { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(process.cwd() + "/../gh-edu/utils/utils.js");
+const utility = import(__dirname + "/../../gh-edu/utils/utils.js");
 
 const query = (org) => `
 query {
@@ -38,26 +44,41 @@ query {
 function parse(teams) {
   let newTeams = [];
   for (const team of teams) {
+    //console.log(team.name);
     if (team.totalCount > 1) {
       console.log(chalk.yellow("Warning:", team.totalCount, "members in this team. Skip"));
       console.log(team.url);
       continue;
     }
-    let dataArr = team.name.split('.')
+    let dataArr = team.name?.match(config?.teams?.regexp)
+    if (!dataArr) continue;
+
+    //console.log(JSON.stringify(dataArr, null, 2));
+
+    // throw new Error if not regexp
+  
+    /*
     if (dataArr.length !== 3) {
       console.log(chalk.yellow("Warning: Wrong team name:", team.name, ". Skip"));
       console.log(team.url);
       continue;
     }
-    newTeams.push(
-      {
-        name: dataArr[0].replaceAll(/[-_]/g, " "),
-        id: dataArr[1],
-        login: dataArr[2],
-        url: team.member.url,
-        email: team.member.email
-      }
-    );
+    */
+
+    let tmp = team.member.url.split("/");
+    let login = tmp[tmp.length - 1];
+    let student = {
+      idTeam: team.name,
+      url: team.member.url,
+      login: login,
+    }; 
+    if (team?.member?.email) student.email= team.member.email
+
+    config?.teams?.fields?.forEach(([field, index]) =>  {
+      console.log(field, index);
+      student[field] = dataArr[index] || "";
+    });
+    newTeams.push(student);
   }
   return newTeams;
 }
