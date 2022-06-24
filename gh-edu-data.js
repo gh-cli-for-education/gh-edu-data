@@ -15,6 +15,8 @@ program
 program
   .command("team")
   .option("-o, --output <outputFile>", "File to write the resulting data")
+  .option("-c, --cache", "Cache the information in the configuration file")
+  .option("-q, --quit", "Don't show any output, except errors")
   .action((options) => {
     team(options);
   })

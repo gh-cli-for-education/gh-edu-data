@@ -1,12 +1,23 @@
+// @ts-check
 import chalk from "chalk";
+
+/** _dirname doesnt work with modules */
+import { fileURLToPath } from 'url';
+import path from 'path';
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+/***/
+
+const configPath = path.join(__dirname, "..", "..", "gh-edu", "config.json")
 
 /** Load configuration */
 import fs from 'fs'
-const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", { encoding: "utf8" })
+const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
+const utility = import(path.join(__dirname, "..", "..", "gh-edu", "js", "utils", "utils.js"));
 
 const query = (org) => `
 query {
@@ -43,19 +54,17 @@ function parse(teams) {
       console.log(team.url);
       continue;
     }
-    let dataArr = team.name.split('.')
-    if (dataArr.length !== 3) {
-      console.log(chalk.yellow("Warning: Wrong team name:", team.name, ". Skip"));
-      console.log(team.url);
-      continue;
+    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.*?)\.(?<id>.*?)\.(?<login>.*[^\s*])/;
+    const result = teamR.exec(team.name);
+    if (!result?.groups) {
+      console.error("Regular expresion ${teamR.source} didn't match anything or there is no groups name");
+      process.exit(1);
     }
     newTeams.push(
       {
-        name: dataArr[0].replaceAll(/[-_]/g, " "),
-        id: dataArr[1],
-        login: dataArr[2],
         url: team.member.url,
-        email: team.member.email
+        email: team.member.email,
+        ...result.groups
       }
     );
   }
@@ -80,4 +89,12 @@ export default async function team(options) {
   } else {
     fs.writeFileSync(options.output, JSON.stringify(newTeams, null, 2));
   }
+  if (options.cache) {
+    config.cache.orgs[config.defaultOrg].data = newTeams
+    updateJSON(config)
+  }
+}
+
+export const updateJSON = (content) => {
+  fs.writeFileSync(configPath, JSON.stringify(content, null, 2));
 }
