@@ -1,16 +1,21 @@
+// @ts-check
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import tmp from "tmp";
+import path from 'path';
+
+import { rootPath, configPath } from '../utils.js'
 
 /** Load configuration */
 import fs from 'fs'
-const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", { encoding: "utf8" })
+const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
+// const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
+const utility = import(path.join(rootPath, "..", "gh-edu", "js", "utils", "utils.js"));
 
-/** @param questions {any[]}*/
+/** @param data {any[]}*/
 async function setMetadata(data) {
   const fields = Object.keys(data[0]);
   let questions = [
@@ -100,7 +105,7 @@ export default async function data(file, options) {
     return;
   const result = await fill(data, metaData);
   fs.writeFileSync(outputFile, JSON.stringify(result, null, 2));
-  console.log("Done!!!");
+  // console.log("Done!!!");
 }
 
 function check(data, metaData) {

@@ -1,6 +1,8 @@
 // @ts-check
 import chalk from "chalk";
 
+import { rootPath, configPath } from '../utils.js'
+
 /** _dirname doesnt work with modules */
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -9,15 +11,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 /***/
 
-const configPath = path.join(__dirname, "..", "..", "gh-edu", "config.json")
-
 /** Load configuration */
 import fs from 'fs'
 const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-const utility = import(path.join(__dirname, "..", "..", "gh-edu", "js", "utils", "utils.js"));
+const utility = import(path.join(rootPath, "..", "gh-edu", "js", "utils", "utils.js"));
 
 const query = (org) => `
 query {
@@ -54,7 +54,7 @@ function parse(teams) {
       console.log(team.url);
       continue;
     }
-    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.*?)\.(?<id>.*?)\.(?<login>.*[^\s*])/;
+    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.*?)\.(?<id>.*?)\.(?<login>.*[^\s*])/; // TODO check regex
     const result = teamR.exec(team.name);
     if (!result?.groups) {
       console.error("Regular expresion ${teamR.source} didn't match anything or there is no groups name");
@@ -84,14 +84,15 @@ export default async function team(options) {
     return 1;
   }
   const newTeams = parse(result);
+  if (options.cache) {
+    config.cache.orgs[config.defaultOrg].data = newTeams;
+    updateJSON(config);
+    return;
+  }
   if (!options.output) {
     console.log(newTeams);
   } else {
     fs.writeFileSync(options.output, JSON.stringify(newTeams, null, 2));
-  }
-  if (options.cache) {
-    config.cache.orgs[config.defaultOrg].data = newTeams
-    updateJSON(config)
   }
 }
 

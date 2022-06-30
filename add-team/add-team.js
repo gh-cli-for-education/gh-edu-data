@@ -1,9 +1,14 @@
 import inquirer from 'inquirer'
-const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
+
+import { rootPath, configPath } from '../utils.js'
+import path from 'path';
+
+const utility = import(path.join(rootPath, "..", "gh-edu", "js", "utils", "utils.js"));
+
 import shell from "shelljs";
 /** Load configuration */
 import fs from 'fs'
-const stringConfig = fs.readFileSync(process.cwd() + "/../gh-edu/config.json", { encoding: "utf8" })
+const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
