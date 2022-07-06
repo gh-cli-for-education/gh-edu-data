@@ -25,8 +25,11 @@ program
   })
 program
   .command("team-add")
-  .action(() => {
-    addTeam();
+  .description("Create teams with certain patterns to get information later on. Empty spaces will become '-'")
+  .option("-r, --regular", "Don't use teamR. Use the common pattern: <name>.<id>.<login>. login is automatic")
+  .option("-s, --separator <separator>", "Separator to use between fields. Ignored if used with -r flag")
+  .action((options) => {
+    addTeam(options);
   })
 program.parse();
 

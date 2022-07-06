@@ -8,11 +8,16 @@ const utility = import(path.join(rootPath, "..", "gh-edu", "js", "utils", "utils
 import shell from "shelljs";
 /** Load configuration */
 import fs from 'fs'
+import chalk from 'chalk';
 const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-async function getName() {
+const getGroupNames = function(myTokens) {
+  return myTokens.match(/(?<=\(\?<).*?(?=\>)/g);
+}
+
+async function noRegex() {
   let questions = [
     {
       type: 'input',
@@ -32,13 +37,44 @@ async function getName() {
   return [result.name, result.identifier, result.login].join(".");
 }
 
-export default async function add_team() {
+async function getName(options) {
+  if (config.teamR === "") {
+    console.error(chalk.red("Set an teamR field, or use -r flag"));
+    process.exit(1);
+  }
+  const fields = getGroupNames(config.teamR);
+  let questions = [];
+  for (const field of fields) {
+    questions.push({
+      type: 'input',
+      name: field,
+      message: 'Write the ' + field
+    })
+  }
+  let result = await inquirer.prompt(questions);
+  const separator = options.separator || (await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'separator',
+      message: 'What is the separator between fields?'
+    }
+  ])).separator
+  result = result.map(replaceAll(' ', '-'));
+  return result.join(separator);
+}
+
+export default async function add_team(options) {
   if (!config.defaultOrg) {
     console.error("Please set an organization as default")
     return;
   }
-  const teamName = await getName();
-  const result = shell.exec(`gh api --method POST -H "Accept: application/vnd.github.v3+json" /orgs/${config.defaultOrg}/teams -f name="${teamName}"`, {silent: true});
+  let teamName;
+  if (options.regular) {
+    teamName = await noRegex();
+  } else {
+    teamName = await getName(options);
+  }
+  const result = shell.exec(`gh api --method POST -H "Accept: application/vnd.github.v3+json" /orgs/${config.defaultOrg}/teams -f name="${teamName}"`, { silent: true });
   if (result.code !== 0) {
     const util = await utility;
     console.error(util.beautify(result.stdout));
