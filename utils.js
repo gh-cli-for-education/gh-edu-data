@@ -2,6 +2,7 @@
 import shell from 'shelljs'
 import chalk from 'chalk';
 import fs from 'fs'
+import { homedir } from 'os'
 
 /** _dirname doesnt work with modules */
 import { fileURLToPath } from 'url';
@@ -12,7 +13,9 @@ const __dirname = path.dirname(__filename);
 /***/
 
 export const rootPath = __dirname;
-export const configPath = path.join(__dirname, "..", "gh-edu", "data", "data.json");
+// export const configPath = path.join(__dirname, "..", "gh-edu", "data", "data.json");
+const configDir = path.join(homedir(), ".config", "gh-edu");
+export const configPath = path.join(configDir, "data.json");
 
 export const updateJSON = (content) => {
   fs.writeFileSync(configPath, JSON.stringify(content, null, 2));
