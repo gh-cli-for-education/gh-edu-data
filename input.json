@@ -1,10 +1,12 @@
 [
   {
     "name": "Cristo",
-    "id": "alu0101204512"
+    "id": "alu0101204512",
+    "score": 7.8
   },
   {
-    "name": "Pepito",
-    "id": "alu0101204577"
+    "name": "Casiano",
+    "id": "alu0101204577",
+    "score": 10.0
   }
 ]

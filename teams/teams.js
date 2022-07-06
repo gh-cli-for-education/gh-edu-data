@@ -1,7 +1,7 @@
 // @ts-check
 import chalk from "chalk";
 
-import { rootPath, configPath } from '../utils.js'
+import { rootPath, configPath, updateJSON } from '../utils.js'
 
 /** _dirname doesnt work with modules */
 import { fileURLToPath } from 'url';
@@ -71,7 +71,7 @@ function parse(teams) {
   return newTeams;
 }
 
-export default async function team(options) {
+export default async function teams(options) {
   if (!config.defaultOrg) {
     console.error("Please set an organization as default")
     return;
@@ -85,17 +85,13 @@ export default async function team(options) {
   }
   const newTeams = parse(result);
   if (options.cache) {
-    config.cache.orgs[config.defaultOrg].data = newTeams;
+    config.commands.data.teams = newTeams;
     updateJSON(config);
-    return;
+    // return;
   }
   if (!options.output) {
     console.log(newTeams);
   } else {
     fs.writeFileSync(options.output, JSON.stringify(newTeams, null, 2));
   }
-}
-
-export const updateJSON = (content) => {
-  fs.writeFileSync(configPath, JSON.stringify(content, null, 2));
 }

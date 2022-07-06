@@ -1,24 +1,27 @@
 import { program } from "commander"
 import data from './data/data.js'
-import team from './team/team.js'
+import teams from './teams/teams.js'
 import addTeam from './add-team/add-team.js'
 
 program
   .command("log")
-  .description("Save some data about your users")
+  .description("Get relevant information about you students")
   .argument("<inputFile>")
-  .option("-o, --output <outputFile>", "File to write the resulting data")
-  .action((file, options) => { // TODO add quiet option
+  .option("-o, --output <outputFile>", "File to write the resulting data. If not specified it will write the result to the standard output")
+  .option("-c, --cache", "Cache the information in the configuration file")
+  .option("-q, --quiet", "Don't show any output, except errors")
+  .action((file, options) => {
     data(file, options);
   })
 
 program
-  .command("team")
-  .option("-o, --output <outputFile>", "File to write the resulting data")
+  .command("teams")
+  .description("Get relevant information about you students using teams")
+  .option("-o, --output <outputFile>", "File to write the resulting data. If not specified it will write the result to the standard output")
   .option("-c, --cache", "Cache the information in the configuration file")
   .option("-q, --quiet", "Don't show any output, except errors")
   .action((options) => {
-    team(options);
+    teams(options);
   })
 program
   .command("team-add")

@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import tmp from "tmp";
 import path from 'path';
 
-import { rootPath, configPath } from '../utils.js'
+import { rootPath, configPath, runCommand, executeQuery, updateJSON } from '../utils.js'
 
 /** Load configuration */
 import fs from 'fs'
@@ -12,12 +12,22 @@ const stringConfig = fs.readFileSync(configPath, { encoding: "utf8" })
 const config = JSON.parse(stringConfig);
 /** END loadConfig */
 
-// const utility = import(process.cwd() + "/../gh-edu/js/utils/utils.js");
-const utility = import(path.join(rootPath, "..", "gh-edu", "js", "utils", "utils.js"));
+/** @param data {any[]}*/
+// get the commond fields of all the elements
+function instersect(data) {
+  let commonFields = Object.keys(data[0]);
+  for (let i = 1; i < data.length; i++) {
+    commonFields = commonFields.filter(field => field in data[i]);
+  }
+  return commonFields;
+}
 
 /** @param data {any[]}*/
 async function setMetadata(data) {
-  const fields = Object.keys(data[0]);
+  const fields = instersect(data);
+  if (fields.length === 0) {
+    console.error(chalk.red("All elements must have a commom field. Allegedly the student name"))
+  }
   let questions = [
     {
       type: 'checkbox',
@@ -38,7 +48,7 @@ async function setMetadata(data) {
       type: 'list',
       name: 'id',
       message: "Which field is the id?",
-      choices: fields
+      choices: new Array(...fields, "[I am not using any kind of identifier]")
     }
   ];
   return await inquirer.prompt(questions).then(answers => (
@@ -67,25 +77,24 @@ const query = (org, node) => `
 `
 
 // https://majiehong.com/post/2021-03-08_fzf_jq_play_locally/
-async function fill(localData, metaData) {
-  const util = await utility;
-  const { data: { organization: { membersWithRole: { nodes: remoteData } } } } = JSON.parse(util.executeQuery(query(config.defaultOrg, metaData.desiredData)));
-  const oneLine = remoteData.map(data => data.login).join('\n');
+async function fill(data, metaData) {
+  // const util = await utility;
+  const { data: { organization: { membersWithRole: { nodes: remoteData } } } } =
+    JSON.parse(executeQuery(query(config.defaultOrg, metaData.desiredData)));
+  const loginOneLine = remoteData.map(data => data.login).join('\n');
   const tmpFile = tmp.tmpNameSync();
   fs.writeFileSync(tmpFile, JSON.stringify(remoteData, null, 2));
-  for (const [index, member] of localData.entries()) {
+  for (const [index, member] of data.entries()) {
     const prompt = `Member: ${member[metaData.name]} ID: ${member[metaData.id]} > `;
-    let command = `echo "${oneLine}"` + `| fzf -m --ansi --prompt='${prompt}' --preview ` + `"cat ${tmpFile} | jq -C '.[] | select(.login==\\"{}\\")'"`;
-    const selectedLogin = util.runCommand(command).replace(/\s/g, ''); // TODO handle signal C-D C-C
-    const selectedData = JSON.parse(util.runCommand(`cat ${tmpFile} | jq '.[] | select(.login==\"${selectedLogin}\")'`, true));
+    // let command = `echo "${oneLine}"` + `| fzf --ansi --prompt='${prompt}' --preview ` + `"cat ${tmpFile} | jq -C '.[] | select(.login==\\"{}\\")'"`;
+    let command = `echo "${loginOneLine}"` + `| fzf --ansi --prompt='${prompt}' --preview ` + `"cat ${tmpFile} | jq -C '.[] | select(.login==\\"{}\\")'"`;
+    const selectedLogin = runCommand(command).replace(/\s/g, ''); // TODO handle signal C-D C-C
+    const selectedData = JSON.parse(runCommand(`cat ${tmpFile} | jq '.[] | select(.login==\"${selectedLogin}\")'`, true));
     for (const field in selectedData) {
-      if (field in localData[index]) {
-        // TODO warning. make an alias to don't overwrite original data
-      }
-      localData[index][field] = selectedData[field];
+      data[index][field] = selectedData[field];
     }
   }
-  return localData;
+  return data;
 }
 
 export default async function data(file, options) {
@@ -94,26 +103,17 @@ export default async function data(file, options) {
     return;
   }
   let outputFile = options.output;
-  if (!options.output) {
-    console.log(chalk.yellow("Warning you are not using --output. The input file will be overwrite"));
-    outputFile = file;
-  }
   const fileString = fs.readFileSync(file, { encoding: "utf8" })
-  const data = JSON.parse(fileString);
-  const metaData = await setMetadata(data);
-  if (check(data, metaData))
-    return;
-  const result = await fill(data, metaData);
-  fs.writeFileSync(outputFile, JSON.stringify(result, null, 2));
-  // console.log("Done!!!");
+  const inputData = JSON.parse(fileString);
+  const metaData = await setMetadata(inputData);
+  const result = await fill(inputData, metaData);
+  if (options.outputFile)
+    fs.writeFileSync(outputFile, JSON.stringify(result, null, 2));
+  else
+    console.log(result);
+  if (options.cache) {
+    config.commands.data.log = result;
+    updateJSON(config);
+  }
 }
 
-function check(data, metaData) {
-  for (const member of data) {
-    if (!member[metaData.name]) {
-      console.error(`Field ${metaData.name} is required`);
-      return 1;
-    }
-  }
-  return 0;
-}

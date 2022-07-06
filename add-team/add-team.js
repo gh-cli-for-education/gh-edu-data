@@ -45,5 +45,5 @@ export default async function add_team() {
     console.error(result.stderr);
     return result.code
   }
-  console.log("Team created!!!");
+  // console.log("Team created!!!");
 }
