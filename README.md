@@ -60,9 +60,12 @@ ULL-ESIT-PL-2122
 Once we have set the default org and the individual identification can be obtained using the command `gh edu data teams`.
 The command outputs to stderr those teams with multiple members:
 
-```json
+```
 ➜  gh-edu-data git:(casiano) ✗ gh edu data teams
-Warning! Teams with several members not included in the identification process: {
+Warning! Teams with several members not included in the identification process: 
+```
+```json
+{
   "casiano-rodriguez-leon-crguezl": [
     "https://github.com/crguezl",
     "https://github.com/algorithms-ull"
