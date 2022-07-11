@@ -1,6 +1,4 @@
 // @ts-check
-import chalk from "chalk";
-
 import { rootPath, configPath, updateJSON } from '../utils.js'
 
 /** _dirname doesnt work with modules */
@@ -45,16 +43,19 @@ query {
   }
 }
 `
+const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.+)[-_](?<id>.+)/; // TODO check regex
 
 function parse(teams) {
-  let newTeams = [];
+  let singleTeams = [];
+  let multipleTeams = Object.create(null);
+  //console.error(JSON.stringify(teams, null, 2));
   for (const team of teams) {
     if (team.totalCount > 1) {
-      console.error(chalk.yellow("Warning! ", team.totalCount, "members in this team. Skip"));
-      console.error(team.url);
+      if (!multipleTeams[team.name]) multipleTeams[team.name] = [];
+      let set = new Set(multipleTeams[team.name]).add(team.member.url);
+      multipleTeams[team.name] = [ ...set];
       continue;
     }
-    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.+)[-_](?<id>.+)/; // TODO check regex
     //console.log(team.name);
     const result = teamR.exec(team.name);
     //console.log(result);
@@ -62,16 +63,20 @@ function parse(teams) {
       console.error(`Warning! Regular expresion /${teamR.source}/ didn't match "${team.name}"`);
       //process.exit(1);
     } else {
-      newTeams.push(
+      singleTeams.push(
         {
           url: team.member.url,
           email: team.member.email,
+          nameInGH: team.member.name,
           ...result.groups
         }
       );
     }
   }
-  return newTeams;
+  if (Object.keys(multipleTeams).length > 0) {
+    console.error(`Teams with several members: ${JSON.stringify(multipleTeams, null, 2)}`);
+  }
+  return singleTeams;
 }
 
 export default async function teams(options) {
@@ -96,19 +101,20 @@ export default async function teams(options) {
       ]'`.replace(/\s+/g, " ");
   //console.log(filter);
   const result = JSON.parse(util.executeQuery(query(config.defaultOrg), filter));
+  console.error(result);
   if (result.length === 0) {
-    console.error(chalk.red("No team in this organization :", config.defaultOrg));
+    console.error("No team in this organization :", config.defaultOrg);
     return 1;
   }
-  const newTeams = parse(result);
+  const singleTeams = parse(result);
   if (options.cache) {
-    config.commands.data.teams = newTeams;
+    config.commands.data.teams = singleTeams;
     updateJSON(config);
     // return;
   }
   if (!options.output) {
-    console.log(newTeams);
+    console.log(JSON.stringify(singleTeams, null, 2));
   } else {
-    fs.writeFileSync(options.output, JSON.stringify(newTeams, null, 2));
+    fs.writeFileSync(options.output, JSON.stringify(singleTeams, null, 2));
   }
 }
