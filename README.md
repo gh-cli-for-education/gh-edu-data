@@ -1,4 +1,4 @@
-This plugin for the ``gh-edu`` exosystem has been created to manage and store various student information.
+This plugin for the ``gh-edu`` ecosystem has been created to manage and store various student information.
 
 ## Installation
 
