@@ -39,7 +39,7 @@ Options:
 ```
 
 
-## team
+## The team command
 
 By default this is the regular expression for the *individual identification teams*:
 
