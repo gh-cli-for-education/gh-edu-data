@@ -50,23 +50,26 @@ function parse(teams) {
   let newTeams = [];
   for (const team of teams) {
     if (team.totalCount > 1) {
-      console.log(chalk.yellow("Warning:", team.totalCount, "members in this team. Skip"));
-      console.log(team.url);
+      console.error(chalk.yellow("Warning! ", team.totalCount, "members in this team. Skip"));
+      console.error(team.url);
       continue;
     }
-    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.+)-(?<id>.+)/; // TODO check regex
+    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.+)[-_](?<id>.+)/; // TODO check regex
+    //console.log(team.name);
     const result = teamR.exec(team.name);
+    //console.log(result);
     if (!result?.groups) {
-      console.error(`Regular expresion /${teamR.source}/ didn't match anything or there is no groups name`);
-      process.exit(1);
+      console.error(`Warning! Regular expresion /${teamR.source}/ didn't match "${team.name}"`);
+      //process.exit(1);
+    } else {
+      newTeams.push(
+        {
+          url: team.member.url,
+          email: team.member.email,
+          ...result.groups
+        }
+      );
     }
-    newTeams.push(
-      {
-        url: team.member.url,
-        email: team.member.email,
-        ...result.groups
-      }
-    );
   }
   return newTeams;
 }
@@ -91,7 +94,7 @@ export default async function teams(options) {
             }
           }
       ]'`.replace(/\s+/g, " ");
-  console.log(filter);
+  //console.log(filter);
   const result = JSON.parse(util.executeQuery(query(config.defaultOrg), filter));
   if (result.length === 0) {
     console.error(chalk.red("No team in this organization :", config.defaultOrg));
