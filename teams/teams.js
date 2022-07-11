@@ -74,7 +74,7 @@ function parse(teams) {
     }
   }
   if (Object.keys(multipleTeams).length > 0) {
-    console.error(`Teams with several members: ${JSON.stringify(multipleTeams, null, 2)}`);
+    console.error(`Warning! Teams with several members not included in the identification process: ${JSON.stringify(multipleTeams, null, 2)}`);
   }
   return singleTeams;
 }

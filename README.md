@@ -38,17 +38,68 @@ Options:
   -h, --help                 display help for command
 ```
 
+
+## team
+
+By default this is the regular expression for the *individual identification teams*:
+
+```
+➜  gh-edu git:(subst-organization-by-org) ✗ gh edu get -t
+(?<name>.+)[-_](?<id>.+)
+``` 
+
+We also need to set a default org:
+
+```
+➜  gh-edu-data git:(casiano) ✗ gh edu set -o 'ULL-ESIT-PL-2122'
+Not in cache. Fetching... (Cache will be updated)
+➜  gh-edu-data git:(casiano) ✗ gh edu get -o
+ULL-ESIT-PL-2122
+```
+
+Once we have set the default org and the individual identification can be obtained using the command `gh edu data teams`.
+The command outputs to stderr those teams with multiple members:
+
+```json
+➜  gh-edu-data git:(casiano) ✗ gh edu data teams
+Warning! Teams with several members not included in the identification process: {
+  "casiano-rodriguez-leon-crguezl": [
+    "https://github.com/crguezl",
+    "https://github.com/algorithms-ull"
+  ]
+}
+```
+
+And re-directs to stdout the individual identification teams:
+
+```json
+[
+  {
+    "url": "https://github.com/AdalDiazFarina",
+    "email": "",
+    "nameInGH": "Adal Díaz Fariña",
+    "name": "adal-diaz-fariña",
+    "id": "alu0101112251"
+  },
+  ... etc.
+  {
+    "url": "https://github.com/casiano",
+    "email": "crguezl@ull.edu.es",
+    "nameInGH": "Casiano",
+    "name": "casiano-rodriguez-leon",
+    "id": "alumno5"
+  },
+  {
+    "url": "https://github.com/GGCristo",
+    "email": "alu0101204512@ull.edu.es",
+    "nameInGH": "Cristo García",
+    "name": "cristo-garcia-gonzalez",
+    "id": "alu0101204512"
+  },
+  ...
+]
+```
+
 ## log
-The main purpose of the log is to link a student's institutional account to his or her GitHub account
-GitHub account and get extra information that can be useful to the teacher.
-teacher.
-An initial file with information that the teacher has about the students is needed.
-This input file has to be of JSON type, with an array where each element stores information about the students.
-stores information about the students. This information has to contain at least the
-name of the student, although it is appropriate that it contains the name and an identifier.
-It can have more data.
-Once the command is executed, the teacher decides which fields he/she wants to have for each student.
-student. And which of the incoming fields correspond to the name and, if any, the identifier.
-the identifier. Then, one by one, and taking advantage of the efficient fzf interface and the preview of the student's remote data, the student in question is filtered in question.
-As a result, a new JSON file is obtained, containing the information initially provided by the teacher
-the teacher, combined with the data provided by GitHub
+
+The log option has no use in its current version. Will be removed
