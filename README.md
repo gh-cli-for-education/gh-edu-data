@@ -96,8 +96,36 @@ And re-directs to stdout the individual identification teams:
     "name": "cristo-garcia-gonzalez",
     "id": "alu0101204512"
   },
-  ...
+  ... etc.
 ]
+```
+
+The option `-c` saves the output the `gh-edu` config json file in the entry 
+`commands/data/teams`:
+
+```json
+  "commands": {
+    "data": {
+      "originalName": "gh-cli-for-education/gh-edu-data",
+      "lastCommit": "1e5cd3a3",
+      "teams": [
+        {
+          "url": "https://github.com/AdalDiazFarina",
+          "email": "",
+          "nameInGH": "Adal Díaz Fariña",
+          "name": "adal-diaz-fariña",
+          "id": "alu0101112251"
+        },
+        ... etc.
+        {
+          "url": "https://github.com/CorEHarD5",
+          "email": "sergiodlbg@gmail.com",
+          "nameInGH": "alu0100953275",
+          "name": "sergio-barrera-garcia",
+          "id": "alu0100953275"
+        }
+      ]
+    },
 ```
 
 ## log
