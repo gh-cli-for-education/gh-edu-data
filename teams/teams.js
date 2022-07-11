@@ -101,7 +101,7 @@ export default async function teams(options) {
       ]'`.replace(/\s+/g, " ");
   //console.log(filter);
   const result = JSON.parse(util.executeQuery(query(config.defaultOrg), filter));
-  console.error(result);
+  //console.error(result);
   if (result.length === 0) {
     console.error("No team in this organization :", config.defaultOrg);
     return 1;
