@@ -1,9 +1,41 @@
-This plugin for the ``gh-edu`` exosystem has been created to manage and store various student information. It has three
-main commands: log, teams and team-add.
+This plugin for the ``gh-edu`` exosystem has been created to manage and store various student information.
 
 ## Installation
+
 ```
-gh edu install log
+gh edu install data
+```
+
+## Usage
+
+```
+gh edu data -h 
+Usage: gh-edu-data [options] [command]
+
+Options:
+  -h, --help                 display help for command
+
+Commands:
+  log [options] <inputFile>  Get relevant information about you students
+  teams [options]            Get relevant information about you students using
+                             teams
+  team-add [options]         Create teams with certain patterns to get
+                             information later on. Empty spaces will become '-'
+  help [command]             display help for command
+```
+
+```
+➜  gh-edu-data git:(casiano) ✗ gh edu data teams -h
+Usage: gh-edu-data teams [options]
+
+Get relevant information about you students using teams
+
+Options:
+  -o, --output <outputFile>  File to write the resulting data. If not specified
+                             it will write the result to the standard output
+  -c, --cache                Cache the information in the configuration file
+  -q, --quiet                Don't show any output, except errors
+  -h, --help                 display help for command
 ```
 
 ## log

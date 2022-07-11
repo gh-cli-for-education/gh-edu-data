@@ -54,10 +54,10 @@ function parse(teams) {
       console.log(team.url);
       continue;
     }
-    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.*?)\.(?<id>.*?)\.(?<login>.*[^\s*])/; // TODO check regex
+    const teamR = (config.teamR) ? new RegExp(config.teamR) : /(?<name>.+)-(?<id>.+)/; // TODO check regex
     const result = teamR.exec(team.name);
     if (!result?.groups) {
-      console.error("Regular expresion ${teamR.source} didn't match anything or there is no groups name");
+      console.error(`Regular expresion /${teamR.source}/ didn't match anything or there is no groups name`);
       process.exit(1);
     }
     newTeams.push(
@@ -77,7 +77,21 @@ export default async function teams(options) {
     return;
   }
   const util = await utility;
-  const filter = "--jq '[.data.organization.teams.edges[].node | {name, totalCount: .members.totalCount, url, member: {name: .members.edges[].node.name, url: .members.edges[].node.url, email: .members.edges[].node.email}}]'";
+  const filter = `--jq 
+       '[
+        .data.organization.teams.edges[].node | 
+        {
+            name, 
+            totalCount: .members.totalCount, 
+            url, 
+            member: {
+              name: .members.edges[].node.name, 
+              url: .members.edges[].node.url, 
+              email: .members.edges[].node.email
+            }
+          }
+      ]'`.replace(/\s+/g, " ");
+  console.log(filter);
   const result = JSON.parse(util.executeQuery(query(config.defaultOrg), filter));
   if (result.length === 0) {
     console.error(chalk.red("No team in this organization :", config.defaultOrg));
